@@ -25,6 +25,8 @@ builder.Services.AddScoped<ISeatCache, SeatCache>();
 builder.Services.AddSignalR();
 builder.Services.AddScoped<ITicketNotifier, TicketNotifier>();
 builder.Services.AddScoped<HoldSeatUseCase>();
+builder.Services.AddScoped<BuySeatUseCase>();
+builder.Services.AddScoped<GetSeatsUseCase>();
 
 // swagger
 builder.Services.AddControllers();

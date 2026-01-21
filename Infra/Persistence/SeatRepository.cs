@@ -23,4 +23,11 @@ public class SeatRepository : ISeatRepository
         _context.Seats.Update(seat);
         await _context.SaveChangesAsync();
     }
+    
+    public async Task<IEnumerable<Seat>> GetAllAsync()
+    {
+        // AsNoTracking for read-only queries to improve performance
+        return await _context.Seats.AsNoTracking().ToListAsync();
+    }
+    
 }

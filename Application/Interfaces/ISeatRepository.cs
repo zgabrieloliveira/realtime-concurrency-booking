@@ -6,4 +6,5 @@ public interface ISeatRepository
 {
     Task<Seat?> GetByIdAsync(Guid id);
     Task UpdateAsync(Seat seat);
+    Task<IEnumerable<Seat>> GetAllAsync();
 }

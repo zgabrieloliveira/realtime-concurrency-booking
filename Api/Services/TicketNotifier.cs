@@ -17,4 +17,10 @@ public class TicketNotifier : ITicketNotifier
     {
         await _hubContext.Clients.All.SendAsync("ReceiveSeatUpdate", seatId, "LOCKED");
     }
+    
+    public async Task NotifySeatSoldAsync(string seatId)
+    {
+        await _hubContext.Clients.All.SendAsync("ReceiveSeatUpdate", seatId, "SOLD");
+    }
+    
 }
