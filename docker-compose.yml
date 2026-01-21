@@ -1,9 +1,8 @@
-version: '3.8'
-
 services:
+  # --- INFRASTRUCTURE ---
   postgres:
-    image: postgres:15-alpine
     container_name: ticket_postgres
+    image: postgres:15-alpine
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
@@ -12,12 +11,53 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ticket_network
 
   redis:
-    image: redis:alpine
     container_name: ticket_redis
+    image: redis:alpine
     ports:
       - "6379:6379"
+    networks:
+      - ticket_network
+
+  # --- APPLICATIONS ---
+  api:
+    container_name: ticket_api
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    environment:
+      # override connection strings to point to containers instead of localhost
+      - ConnectionStrings__DefaultConnection=Host=ticket_postgres;Port=5432;Database=ticketmaster;Username=admin;Password=password
+      - ConnectionStrings__RedisConnection=ticket_redis:6379
+      # fix swagger env
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5000:8080" # map host 5000 to container 8080
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ticket_network
+
+  listener:
+    container_name: ticket_listener
+    build:
+      context: .
+      dockerfile: Listener/Dockerfile
+    environment:
+      # point to the internal api container name
+      - API_URL=http://ticket_api:8080
+    depends_on:
+      - api
+    networks:
+      - ticket_network
 
 volumes:
   postgres_data:
+
+networks:
+  ticket_network:
+    driver: bridge

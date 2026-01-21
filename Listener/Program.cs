@@ -7,10 +7,9 @@ Console.Clear();
 Console.WriteLine("--- TICKETS REAL-TIME LISTENER ---");
 Console.ResetColor();
 
-// important: check the port your api is running on!
-// usually http://localhost:5000 or https://localhost:7001
-// check the "properties/launchSettings.json" in the api project if unsure
-var url = "http://localhost:5000/ticketHub"; 
+// get url from environment variable (docker) or use default (local)
+var baseUrl = Environment.GetEnvironmentVariable("API_URL") ?? "http://localhost:5000";
+var url = $"{baseUrl}/ticketHub";
 
 // build the connection
 var connection = new HubConnectionBuilder()
